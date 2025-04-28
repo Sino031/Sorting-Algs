@@ -855,8 +855,38 @@ def start_cocktail_shaker_sort():
 def is_any_sorting():
     return any(sorting_states.values())
 
+def show_epilepsy_warning(screen):
+    screen.fill(BLACK)
+    font = pygame.font.Font(None, 36)
+    warning_text = [
+        "WARNING: This program contains flashing lights",
+        "and rapid visual changes that may trigger",
+        "photosensitive epilepsy in some individuals.",
+        "",
+        "Press any key to continue..."
+    ]
+    y_offset = HEIGHT // 2 - len(warning_text) * 20
+    for line in warning_text:
+        text_surface = font.render(line, True, WHITE)
+        text_rect = text_surface.get_rect(center=(WIDTH // 2, y_offset))
+        screen.blit(text_surface, text_rect)
+        y_offset += 40
+
+    pygame.display.update()
+
+    # Wait for the user to press a key
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                waiting = False
+
 sorting = False
 running = True
+show_epilepsy_warning(screen)
 draw_list(screen, sample_list)
 while running:
     for event in pygame.event.get():
@@ -904,11 +934,13 @@ while running:
                 sample_list = [i for i in range(1, n)]
                 random.shuffle(sample_list)
                 draw_list(screen, sample_list)
+                big_list = False if len(sample_list) < 512 else True
             elif event.key == pygame.K_DOWN and not is_any_sorting() and len(sample_list) != 2:
                 n = (len(sample_list) // 2) + 1
                 sample_list = [i for i in range(1, n)]
                 random.shuffle(sample_list)
                 draw_list(screen, sample_list)
+                big_list = False if len(sample_list) < 512 else True
             elif event.key == pygame.K_TAB and not is_any_sorting():
                 sample_list = sample_list[::-1]
                 draw_list(screen, sample_list)
