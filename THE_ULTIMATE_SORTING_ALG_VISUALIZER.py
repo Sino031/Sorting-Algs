@@ -91,7 +91,10 @@ sorting_states = {
     'quantum_bogo_sort': False,
     'schrodinger_sort': False,
     'intelligent_design_sort': False,
-    'miracle_sort': False
+    'miracle_sort': False,
+    'radix_sort': False,
+    'cocktail_shaker_sort': False,
+    'heap_sort': False
 }
 
 def bubble_sort(screen, list_object):
@@ -702,6 +705,75 @@ def cocktail_shaker_sort(screen, list_object):
         else:
             pygame.time.delay(3)
 
+def heap_sort(screen, list_object):
+    build_max_heap(screen, list_object)
+    for i in range(len(list_object) - 1, 0, -1):
+        list_object[0], list_object[i] = list_object[i], list_object[0]
+        draw_list(screen, list_object, [0, i])
+        play_sound(list_object[i], max(list_object))
+        pygame.time.delay(25)
+        heapify(screen, list_object, i, 0)
+    
+    l = []
+    for i in range(len(list_object)):
+        draw_list(screen, list_object, [i], exception_indicies=l)
+        play_sound(list_object[i], max(list_object))
+        l.append(i)
+        if not big_list:
+            pygame.time.delay(25)
+        else:
+            pygame.time.delay(3)
+
+def build_max_heap(screen, list_object):
+    n = len(list_object)
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(screen, list_object, n, i)
+
+def heapify(screen, list_object, n, i):
+    largest = i
+    left = 2 * i + 1
+    right = 2 * i + 2
+
+    if left < n and list_object[left] > list_object[largest]:
+        largest = left
+    
+    if right < n and list_object[right] > list_object[largest]:
+        largest = right
+    
+    if largest != i:
+        list_object[i], list_object[largest] = list_object[largest], list_object[i]
+        draw_list(screen, list_object, [i, largest])
+        play_sound(list_object[i], max(list_object))
+        pygame.time.delay(25)
+        heapify(screen, list_object, n, largest)
+
+def pancake_sort(screen, list_object):
+    n = len(list_object)
+
+    def flip(sublist, k):
+        sublist[:k + 1] = reversed(sublist[:k + 1])
+        draw_list(screen, sublist, list(range(k + 1)))
+        play_sound(sublist[k], max(sublist))
+        pygame.time.delay(25)
+    
+    for size in range(n, 1, -1):
+        max_index = list_object.index(max(list_object[:size]))
+        if max_index != size - 1:
+            flip(list_object, max_index)
+            pygame.time.delay(100)
+            flip(list_object, size - 1)
+            pygame.time.delay(100)
+    
+    l = []
+    for i in range(n):
+        draw_list(screen, list_object, [i], exception_indicies=l)
+        play_sound(list_object[i], max(list_object))
+        l.append(i)
+        if not big_list:
+            pygame.time.delay(25)
+        else:
+            pygame.time.delay(3)
+
 def is_sorted(list_object):
     for i in range(len(list_object) - 1):
         if list_object[i] > list_object[i + 1]:
@@ -852,6 +924,22 @@ def start_cocktail_shaker_sort():
     print("Cocktail Shaker Sort finished")
     draw_list(screen, sample_list)
 
+def start_heap_sort():
+    sorting_states['heap_sort'] = True
+    print("Heap Sort started")
+    heap_sort(screen, sample_list)
+    sorting_states['heap_sort'] = False
+    print("Heap Sort finished")
+    draw_list(screen, sample_list)
+
+def start_pancake_sort():
+    sorting_states['pancake_sort'] = True
+    print("Pancake Sort started")
+    pancake_sort(screen, sample_list)
+    sorting_states['pancake_sort'] = False
+    print("Pancake Sort finished")
+    draw_list(screen, sample_list)
+
 def is_any_sorting():
     return any(sorting_states.values())
 
@@ -929,6 +1017,10 @@ while running:
                 threading.Thread(target=start_radix_sort, daemon=True).start()
             elif event.key == pygame.K_c and not is_any_sorting():
                 threading.Thread(target=start_cocktail_shaker_sort, daemon=True).start()
+            elif event.key == pygame.K_h and not is_any_sorting():
+                threading.Thread(target=start_heap_sort, daemon=True).start()
+            elif event.key == pygame.K_p and not is_any_sorting():
+                threading.Thread(target=start_pancake_sort, daemon=True).start()
             elif event.key == pygame.K_UP and not is_any_sorting() and len(sample_list) != 1024:
                 n = (len(sample_list) * 2) + 1
                 sample_list = [i for i in range(1, n)]
