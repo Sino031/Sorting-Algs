@@ -15,14 +15,14 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.DOUBLEBUF)
 pygame.display.set_caption("Sorting Algorithm Visualizer")
 clock = pygame.time.Clock()
 
 current_title = "Sorting Algorithm Visualizer"
 
 pygame.mixer.init()
-pygame.mixer.music.load("Soviet-Union-Anthem-Sound-Effect.mp3")
+pygame.mixer.music.load("sfx.mp3")
 
 def nearest_power_of_2(n):
     return 2 ** (n - 1).bit_length()
@@ -59,6 +59,7 @@ def draw_list(screen, list_object, highlighted_indicies=[], highlighted_color=RE
         
         pygame.draw.rect(screen, color, (current_x, y_position, bar_width, bar_height))
         current_x = (i + 1) * bar_width
+    pygame.display.update()
 
 def play_sound(value, max_value):
     frequency = 200 + (value / max_value) * 1800
@@ -94,7 +95,8 @@ sorting_states = {
     'miracle_sort': False,
     'radix_sort': False,
     'cocktail_shaker_sort': False,
-    'heap_sort': False
+    'heap_sort': False,
+    'pancake_sort': False
 }
 
 def bubble_sort(screen, list_object):
@@ -1042,6 +1044,5 @@ while running:
                     draw_list(screen, sample_list)
                     pygame.display.update()
                     pygame.time.delay(100) 
-    pygame.display.update()
     clock.tick(FPS)
 pygame.quit()
