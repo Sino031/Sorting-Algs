@@ -8,6 +8,7 @@ pygame.init()
 
 WIDTH = 1024
 HEIGHT = 512
+SCREEN_HEIGHT = 700
 FPS = 60
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -15,7 +16,7 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.DOUBLEBUF)
+screen = pygame.display.set_mode((WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF)
 pygame.display.set_caption("Sorting Algorithm Visualizer")
 clock = pygame.time.Clock()
 
@@ -36,12 +37,16 @@ desired_size = nearest_power_of_2(len(sample_list))
 if len(sample_list) > desired_size:
     sample_list = sample_list[:desired_size]
 
-banner_width = 256
-banner_height = 64
-banner_x, banner_y = 0, 0
+def draw_title(screen, title):
+    pygame.draw.rect(screen, BLACK, (0, 0, WIDTH, 148))
+    font = pygame.font.Font(None, 36)
+    text_surface = font.render(title, True, WHITE)
+    text_rect = text_surface.get_rect(center=(WIDTH // 2, 128))
+    screen.blit(text_surface, text_rect)
+    pygame.display.update()
 
 def draw_list(screen, list_object, highlighted_indicies=[], highlighted_color=RED, exception_indicies=[], exception_color=GREEN):
-    screen.fill(BLACK)
+    screen.fill(BLACK, (0, (SCREEN_HEIGHT - HEIGHT), WIDTH, HEIGHT))
     total_bars = len(list_object)
     bar_width = WIDTH // total_bars
     scaling_factor = HEIGHT / max(sample_list)
@@ -55,8 +60,8 @@ def draw_list(screen, list_object, highlighted_indicies=[], highlighted_color=RE
         else:
             color = WHITE
         bar_height = int(value * scaling_factor)
-        y_position = HEIGHT - bar_height
-        
+        y_position = (SCREEN_HEIGHT - HEIGHT) + (HEIGHT - bar_height) 
+
         pygame.draw.rect(screen, color, (current_x, y_position, bar_width, bar_height))
         current_x = (i + 1) * bar_width
     pygame.display.update()
@@ -105,6 +110,7 @@ def bubble_sort(screen, list_object):
         for j in range(n - i - 1):
             if list_object[j] > list_object[j + 1]:
                 list_object[j], list_object[j + 1] = list_object[j + 1], list_object[j]
+                draw_title(screen, current_title)
                 draw_list(screen, list_object, [j, j + 1])
                 play_sound(list_object[j + 1], max(list_object))
                 pygame.time.delay(25)
@@ -127,6 +133,7 @@ def selection_sort(screen, list_object):
             if list_object[j] < list_object[min_idx]:
                 min_idx = j
         list_object[i], list_object[min_idx] = list_object[min_idx], list_object[i]
+        draw_title(screen, current_title)
         draw_list(screen, list_object, [i, min_idx])
         play_sound(list_object[min_idx], max(list_object))
         pygame.time.delay(25)
@@ -143,6 +150,7 @@ def selection_sort(screen, list_object):
 
 def insertion_sort(screen, list_object):
     n = len(list_object)
+    draw_title(screen, current_title)
     for i in range(1, n):
         j = i - 1
         key = list_object[i]
@@ -165,6 +173,7 @@ def insertion_sort(screen, list_object):
             pygame.time.delay(3)
 
 def merge_sort(screen, list_object, start=0, end=None):
+    draw_title(screen, current_title)
     if end is None:
         end = len(list_object)
     if end - start > 1:
@@ -212,6 +221,7 @@ def merge_sort(screen, list_object, start=0, end=None):
                 pygame.time.delay(3)
 
 def quick_sort(screen, list_object, low=0, high=None):
+    draw_title(screen, current_title)
     if high is None:
         high = len(list_object) - 1
     if low < high:
@@ -250,6 +260,7 @@ def partition(screen, list_object, low, high):
     return i + 1
 
 def bucket_sort(screen, list_object):
+    draw_title(screen, current_title)
     max_value = max(list_object)
     size = len(list_object)
 
@@ -293,6 +304,7 @@ def bucket_sort(screen, list_object):
             pygame.time.delay(3)
 
 def stalin_sort(screen, list_object):
+    draw_title(screen, current_title)
     n = len(list_object)
     sorted_list = [list_object[0]]
     discarded_indices = []
@@ -373,6 +385,7 @@ You were found guilty of being too illogical.""",
     pygame.mixer.music.stop()
 
 def bogo_sort(screen, list_object):
+    draw_title(screen, current_title)
     max_value = max(list_object)
     while not is_sorted(list_object):
         random.shuffle(list_object)
@@ -393,6 +406,7 @@ def bogo_sort(screen, list_object):
             pygame.time.delay(3)
 
 def sleep_sort(screen, list_object):
+    draw_title(screen, current_title)
     sorted_list = []
 
     def print_and_append(n):
@@ -425,6 +439,7 @@ def sleep_sort(screen, list_object):
 final_pass_done = False
 
 def slow_sort(screen, list_object, start=0, end=None):
+    draw_title(screen, current_title)
     global final_pass_done
     if end is None:
         end = len(list_object)
@@ -462,6 +477,7 @@ def slow_sort(screen, list_object, start=0, end=None):
         final_pass_done = True
 
 def bozo_sort(screen, list_object):
+    draw_title(screen, current_title)
     while not is_sorted(list_object):
         i = random.randint(0, len(list_object) - 1)
         j = random.randint(0, len(list_object) - 1)
@@ -483,6 +499,7 @@ def bozo_sort(screen, list_object):
             pygame.time.delay(3)
 
 def bogo_bogo_sort(screen, list_object):
+    draw_title(screen, current_title)
     while not is_sorted(list_object):
         for i in range(len(list_object)):
             if not is_sorted(list_object[:i + 1]):
@@ -507,6 +524,7 @@ def bogo_bogo_sort(screen, list_object):
             pygame.time.delay(3)
 
 def quantum_bogo_sort(screen, list_object):
+    draw_title(screen, current_title)
     draw_list(screen, list_object)
     pygame.time.delay(500)
 
@@ -535,6 +553,7 @@ def quantum_bogo_sort(screen, list_object):
             pygame.time.delay(3)
 
 def schrodinger_sort(screen, list_object):
+    draw_title(screen, current_title)
     draw_list(screen, list_object)
     pygame.time.delay(500)
 
@@ -568,6 +587,7 @@ def schrodinger_sort(screen, list_object):
     print(message)
 
 def intelligent_design_sort(screen, list_object):
+    draw_title(screen, current_title)
     draw_list(screen, list_object)
     pygame.time.delay(500)
 
@@ -594,6 +614,7 @@ def intelligent_design_sort(screen, list_object):
     print(message)
 
 def miracle_sort(screen, list_object):
+    draw_title(screen, current_title)
     draw_list(screen, list_object)
     pygame.time.delay(500)
     while not is_sorted(list_object):
@@ -628,6 +649,7 @@ def miracle_sort(screen, list_object):
     print("NO WAY! IT WORKED! A MIRACLE HAPPENED!")
 
 def radix_sort(screen, list_object):
+    draw_title(screen, current_title)
     max_value = max(list_object)
     exp = 1
     while max_value // exp > 0:
@@ -668,6 +690,7 @@ def counting_sort(screen, list_object, exp):
         pygame.time.delay(25)
 
 def cocktail_shaker_sort(screen, list_object):
+    draw_title(screen, current_title)
     n = len(list_object)
     start = 0
     end = n - 1
@@ -708,6 +731,7 @@ def cocktail_shaker_sort(screen, list_object):
             pygame.time.delay(3)
 
 def heap_sort(screen, list_object):
+    draw_title(screen, current_title)
     build_max_heap(screen, list_object)
     for i in range(len(list_object) - 1, 0, -1):
         list_object[0], list_object[i] = list_object[i], list_object[0]
@@ -750,6 +774,7 @@ def heapify(screen, list_object, n, i):
         heapify(screen, list_object, n, largest)
 
 def pancake_sort(screen, list_object):
+    draw_title(screen, current_title)
     n = len(list_object)
 
     def flip(sublist, k):
@@ -783,162 +808,242 @@ def is_sorted(list_object):
     return True
 
 def start_bubble_sort():
+    global current_title
     sorting_states['bubble_sort'] = True
+    current_title = "Bubble Sort"
     print("Bubble Sort started")
     bubble_sort(screen, sample_list)
     sorting_states['bubble_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Bubble Sort finished")
     draw_list(screen, sample_list)
 
 def start_selection_sort():
+    global current_title
     sorting_states['selection_sort'] = True
+    current_title = "Selection Sort"
     print("Selection Sort started")
     selection_sort(screen, sample_list)
     sorting_states['selection_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Selection Sort finished")
     draw_list(screen, sample_list)
 
 def start_insertion_sort():
+    global current_title
     sorting_states['insertion_sort'] = True
+    current_title = "Insertion Sort"
     print("Insertion Sort started")
     insertion_sort(screen, sample_list)
     sorting_states['insertion_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Insertion Sort finished")
     draw_list(screen, sample_list)
 
 def start_merge_sort():
+    global current_title
     sorting_states['merge_sort'] = True
+    current_title = "Merge Sort"
     print("Merge Sort started")
     merge_sort(screen, sample_list)
     sorting_states['merge_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Merge Sort finished")
     draw_list(screen, sample_list)
 
 def start_quick_sort():
+    global current_title
     sorting_states['quick_sort'] = True
+    current_title = "Quick Sort"
     print("Quick Sort started")
     quick_sort(screen, sample_list)
     sorting_states['quick_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Quick Sort finished")
     draw_list(screen, sample_list)
 
 def start_bucket_sort():
     global current_title
+    global current_title
     sorting_states['bucket_sort'] = True
+    current_title = "Bucket Sort"
     print("Bucket Sort started")
     bucket_sort(screen, sample_list)
     sorting_states['bucket_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Bucket Sort finished")
     draw_list(screen, sample_list)
 
 def start_stalin_sort():
+    global current_title
     sorting_states['stalin_sort'] = True
+    current_title = "Stalin Sort"
     print("Stalin Sort started")
     stalin_sort(screen, sample_list)
     sorting_states['stalin_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("LONG LIVE THE GREAT SOVIET UNION")
 
 def start_bogo_sort():
+    global current_title
     sorting_states['bogo_sort'] = True
+    current_title = "Bogo Sort"
     print("Bogo Sort started")
     bogo_sort(screen, sample_list)
     sorting_states['bogo_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Bogo Sort finished")
     draw_list(screen, sample_list)
 
 def start_sleep_sort():
+    global current_title
     sorting_states['sleep_sort'] = True
+    current_title = "Sleep Sort"
     print("Sleep Sort started")
     sleep_sort(screen, sample_list)
     sorting_states['sleep_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Sleep Sort finished")
     draw_list(screen, sample_list)
 
 def start_slow_sort():
+    global current_title
     sorting_states['slow_sort'] = True
+    current_title = "Slow Sort"
     print("Slow Sort started")
     slow_sort(screen, sample_list)
     sorting_states['slow_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Slow Sort finished")
     draw_list(screen, sample_list)
 
 def start_bozo_sort():
+    global current_title
     sorting_states['bozo_sort'] = True
+    current_title = "Bozo Sort"
     print("Bozo Sort started")
     bozo_sort(screen, sample_list)
     sorting_states['bozo_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Bozo Sort finished")
     draw_list(screen, sample_list)
 
 def start_bogo_bogo_sort():
+    global current_title
     sorting_states['bogo_bogo_sort'] = True
+    current_title = "Bogo Bogo Sort"
     print("Bogo Bogo Sort started")
     bogo_bogo_sort(screen, sample_list)
     sorting_states['bogo_bogo_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Bogo Bogo Sort finished")
     draw_list(screen, sample_list)
 
 def start_quantum_bogo_sort():
+    global current_title
     sorting_states['quantum_bogo_sort'] = True
+    current_title = "Quantum Bogo Sort"
     print("Quantum Bogo Sort started")
     quantum_bogo_sort(screen, sample_list)
     sorting_states['quantum_bogo_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Quantum Bogo Sort finished")
     draw_list(screen, sample_list)
 
 def start_schrodinger_sort():
+    global current_title
     sorting_states['schrodinger_sort'] = True
+    current_title = "Schrodinger Sort"
     print("Schrodinger Sort started")
     schrodinger_sort(screen, sample_list)
     sorting_states['schrodinger_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Schrodinger Sort finished")
     draw_list(screen, sample_list)
 
 def start_intelligent_design_sort():
+    global current_title
     sorting_states['intelligent_design_sort'] = True
+    current_title = "Intelligent Design Sort"
     print("Intelligent Design Sort started")
     intelligent_design_sort(screen, sample_list)
     sorting_states['intelligent_design_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Intelligent Design Sort finished")
     draw_list(screen, sample_list)
 
 def start_miracle_sort():
+    global current_title
     sorting_states['miracle_sort'] = True
+    current_title = "Miracle Sort"
     print("Miracle Sort started")
     miracle_sort(screen, sample_list)
     sorting_states['miracle_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Miracle Sort finished")
     draw_list(screen, sample_list)
 
 def start_radix_sort():
+    global current_title
     sorting_states['radix_sort'] = True
+    current_title = "Radix Sort"
     print("Radix Sort started")
     radix_sort(screen, sample_list)
     sorting_states['radix_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Radix Sort finished")
     draw_list(screen, sample_list)
 
 def start_cocktail_shaker_sort():
+    global current_title
     sorting_states['cocktail_shaker_sort'] = True
+    current_title = "Cocktail Shaker Sort"
     print("Cocktail Shaker Sort started")
     cocktail_shaker_sort(screen, sample_list)
     sorting_states['cocktail_shaker_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Cocktail Shaker Sort finished")
     draw_list(screen, sample_list)
 
 def start_heap_sort():
+    global current_title
     sorting_states['heap_sort'] = True
+    current_title = "Heap Sort"
     print("Heap Sort started")
     heap_sort(screen, sample_list)
     sorting_states['heap_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Heap Sort finished")
     draw_list(screen, sample_list)
 
 def start_pancake_sort():
+    global current_title
     sorting_states['pancake_sort'] = True
+    current_title = "Pancake Sort"
     print("Pancake Sort started")
     pancake_sort(screen, sample_list)
     sorting_states['pancake_sort'] = False
+    current_title = "Sorting Algorithm Visualizer"
+    draw_title(screen, current_title)
     print("Pancake Sort finished")
     draw_list(screen, sample_list)
 
@@ -955,7 +1060,7 @@ def show_epilepsy_warning(screen):
         "",
         "Press any key to continue..."
     ]
-    y_offset = HEIGHT // 2 - len(warning_text) * 20
+    y_offset = SCREEN_HEIGHT // 2 - len(warning_text) * 20
     for line in warning_text:
         text_surface = font.render(line, True, WHITE)
         text_rect = text_surface.get_rect(center=(WIDTH // 2, y_offset))
@@ -973,10 +1078,13 @@ def show_epilepsy_warning(screen):
                 exit()
             if event.type == pygame.KEYDOWN:
                 waiting = False
+    screen.fill(BLACK)
+    pygame.display.update()
 
 sorting = False
 running = True
 show_epilepsy_warning(screen)
+draw_title(screen, current_title)
 draw_list(screen, sample_list)
 while running:
     for event in pygame.event.get():
@@ -1039,10 +1147,15 @@ while running:
                 sample_list = sample_list[::-1]
                 draw_list(screen, sample_list)
             elif (event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT) and not is_any_sorting():
+                current_title = "Shuffling..."
                 for i in range(1, 6):
                     random.shuffle(sample_list)
+                    draw_title(screen, current_title)
                     draw_list(screen, sample_list)
                     pygame.display.update()
                     pygame.time.delay(100) 
+                current_title = "Sorting Algorithm Visualizer"
+                draw_title(screen, current_title)
+                draw_list(screen, sample_list)
     clock.tick(FPS)
 pygame.quit()
